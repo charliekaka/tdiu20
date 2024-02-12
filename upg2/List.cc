@@ -42,7 +42,15 @@ string List::to_string() const
 
 void List::insert(int const v)
 {
-    insert(v,first);
+    if( first == nullptr )
+    {
+        first = new Node{v, nullptr, nullptr};
+        last = first;
+    }
+    else
+    {
+        insert(v,first);
+    }
 }
 
 void List::insert(int const v,Node* node_pointer)
@@ -50,19 +58,9 @@ void List::insert(int const v,Node* node_pointer)
     if(node_pointer == nullptr)
     {
         cout << "z";
-        node_pointer = new Node{v, nullptr, nullptr};
-        if(first == nullptr)
-        {
-            first = node_pointer;
-            last = node_pointer;
-        }
-        else if(first != node_pointer)
-        {
-            node_pointer -> previus = last;
-            last -> next = node_pointer;
-            last = node_pointer;
-                
-        }
+        node_pointer = new Node{v, nullptr, last};
+        last -> next = node_pointer;
+        last = node_pointer;
         return;
     }
     
@@ -70,6 +68,10 @@ void List::insert(int const v,Node* node_pointer)
     {
         // ny Node innan den jag tittar på
         Node* new_node = new Node{v ,node_pointer, node_pointer -> previus };
+        if(node_pointer == first)
+        {
+            first = new_node;
+        }
         node_pointer -> previus = new_node;
         new_node -> previus -> next = new_node;
         return;
