@@ -72,8 +72,11 @@ void List::insert(int const v,Node* node_pointer)
         {
             first = new_node;
         }
-        node_pointer -> previus = new_node;
-        new_node -> previus -> next = new_node;
+        else
+        {
+            node_pointer -> previus = new_node;     
+            new_node -> previus -> next = new_node; 
+        }
         return;
     }
     else if(v > (node_pointer -> value))
