@@ -45,39 +45,39 @@ void List::insert(int const v)
     insert(v,first);
 }
 
-void List::insert(int const v,Node* tmp_pointer)
+void List::insert(int const v,Node* node_pointer)
 {
-    if(tmp_pointer == nullptr)
+    if(node_pointer == nullptr)
     {
         cout << "z";
-        tmp_pointer = new Node{v, nullptr, nullptr};
+        node_pointer = new Node{v, nullptr, nullptr};
         if(first == nullptr)
         {
-            first = tmp_pointer;
-            last = tmp_pointer;
+            first = node_pointer;
+            last = node_pointer;
         }
-        else if(first != tmp_pointer)
+        else if(first != node_pointer)
         {
-            tmp_pointer -> previus = last;
-            last -> next = tmp_pointer;
-            last = tmp_pointer;
+            node_pointer -> previus = last;
+            last -> next = node_pointer;
+            last = node_pointer;
                 
         }
         return;
     }
     
-    if(v <= (tmp_pointer -> value))
+    if(v <= (node_pointer -> value))
     {
-        cout << "a";
         // ny Node innan den jag tittar på
-        tmp_pointer = new Node{v , tmp_pointer, tmp_pointer};
-        (tmp_pointer -> previus) = tmp_pointer;
+        Node* new_node = new Node{v ,node_pointer, node_pointer -> previus };
+        node_pointer -> previus = new_node;
+        new_node -> previus -> next = new_node;
         return;
     }
-    else if(v > (tmp_pointer -> value))
+    else if(v > (node_pointer -> value))
     {
         cout << "b";
-        return insert(v, (tmp_pointer -> next));
+        return insert(v, (node_pointer -> next));
         
     }
 }
