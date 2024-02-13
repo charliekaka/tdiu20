@@ -4,6 +4,17 @@
 #include <string>
 #include <sstream>
 
+// Information om komplettering:
+//   Kompletteringen kan gälla hela filen och alla filer i labben,
+//   så får ni komplettering på en sak, kan samma sak förekomma på
+//   fler ställen utan att jag skrivit det.
+//
+//   Komplettering lämnas in via sendlab efter senast en (1) vecka
+//
+//   Har ni frågor om kompletteringen kan ni maila mig på:
+//   love.arreborn@liu.se
+
+
 class Time {
 public:
 	// CONSTRUCTOR FUNCTIONS
@@ -25,7 +36,7 @@ public:
 	Time& operator+=(int const x);		// PLUS EQUALS
 	Time operator-(int const x) const;	// MINUS
 	Time& operator-=(int const x);		// MINUS EQUALS
-
+	
 	// ONESTEP ARITHMETIC OPERATORS
 	Time& operator++();	// PRE  INCREMENT
 	Time operator++(int);	// POST INCREMENT
@@ -54,5 +65,8 @@ private:
 // STREAM HANDLER OPERATORS
 std::ostream& operator<<(std::ostream& os, Time const& item); // PRINTABLE STRING
 std::istream& operator>>(std::istream& is, Time& item);       // STANDARD OUTPUT
+
+Time operator+(const int x, Time const& t);
+Time operator-(const int x, Time const& t);
 
 #endif

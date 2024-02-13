@@ -4,9 +4,12 @@
 #include <iostream>
 #include <iomanip>
 
+// Komplettering (bonus): Enligt C++ kodkonvention ska operator>> aldrig kasta ett undantag.
+// Kommentar: Använd inte default-parametrar endast i implementationsfilen.
+
 using namespace std;
 
-Time::Time(int h=0, int m=0, int s=0)
+Time::Time(int h = 0, int m = 0, int s = 0)
 	: h{h}, m{m}, s{s}
 {
 	check_times();
@@ -21,7 +24,7 @@ Time::Time(string const& str_time)
 	iss >> h >> c >> m >> c >> s >> postfix;
 
 	if(postfix == "pm" || postfix == "PM"){
-		h+=12;
+		h += 12;
 	}
 
 	check_times();
@@ -29,8 +32,8 @@ Time::Time(string const& str_time)
 
 void Time::check_times() const
 {
-	if(	h>=24 || m>=60 || s>=60 ||
-	   	h<0   || m<0   || s<0)
+	if(	h >= 24 || m >= 60 || s >= 60 ||
+	   	h < 0   || m < 0   || s < 0)
 	{
 		throw out_of_range("felaktiga tider");
 	}
@@ -42,25 +45,36 @@ string Time::to_string(bool const am_pm_format) const
 	string postfix {};
 	int temp_h {h};
 
-	if(am_pm_format){
-		if(is_am()){
+	if(am_pm_format)
+	{
+		if(is_am())
+		{
+			if(temp_h == 0) 
+			{
+				temp_h += 12;
+			}
 			postfix = "am";
-		}else{
-			temp_h -= 12;
+		}else
+		{
+			if(temp_h != 12) 
+			{
+				temp_h -= 12;
+			}
 			postfix = "pm";
 		}
 	}
 
-	oss << setw(2) << setfill('0') << temp_h << ":"
-	    << setw(2) << setfill('0') << m << ":"
-	    << setw(2) << setfill('0') << s << postfix;
+	oss << setfill('0') << setw(2)
+	    << temp_h << ":" << setw(2) 
+	    << m << ":" << setw(2)
+	    << s << postfix;
 
 	return oss.str();
 }
 
 bool Time::is_am() const
 {
-	return h<13;
+	return h < 12;
 }
 
 int Time::get_hour() const
@@ -78,6 +92,41 @@ int Time::get_second() const
 	return s;
 }
 
+// PLUS EQUALS
+Time& Time::operator+=(int const x)
+{
+	s += x;
+
+	while(s >= 60 || s < 0) {
+		
+		if(s >= 60){
+			m++;
+			s -= 60;
+			if(m == 60){
+				h++;
+				m = 0;
+				if(h == 24){
+					h = 0;
+				}
+			}
+		}
+		else if(s < 0){
+			m--;
+			if(m < 0){
+				h--;
+				m = 59;
+				if(h < 0){
+					h = 23;
+				}
+			}
+			s += 60;
+		}
+
+	}
+
+	return *this;
+}
+
 // PLUS
 Time Time::operator+(int const x) const
 {
@@ -86,27 +135,10 @@ Time Time::operator+(int const x) const
 	return tmp;
 }
 
-// PLUS EQUALS
-Time& Time::operator+=(int const x)
+// PRE PLUS
+Time operator+(int const x, Time const& t)
 {
-	if(s+x < 0){
-		*this-=abs(x);
-		return *this;
-	}
-
-	s+=x;
-	while(s >= 60){
-		m++;
-		s -= 60;
-		if(m == 60){
-			h++;
-			m = 0;
-			if(h == 24){
-				h = 0;
-			}
-		}
-	}
-	return *this;
+	return t+x;
 }
 
 // MINUS
@@ -117,76 +149,42 @@ Time Time::operator-(int const x) const
 	return tmp;
 }
 
+// PRE MINUS 
+Time operator-(int const x, Time const& t)
+{
+	return t-x;
+}
+
 // MINUS EQUALS
 Time& Time::operator-=(int const x)
 {
-	if(s-x > 0){
-		*this+=abs(x);
-		return *this;
-	}
-
-	s -= x;
-	while(s < 0){
-		m--;
-		if(m < 0){
-			h--;
-			m = 59;
-			if(h < 0){
-				h = 23;
-			}
-		}
-		s+=60;
-	}
+	*this += -1*x;
 	return *this;
 }
 
 // PRE INCREMENT
 Time& Time::operator++()
 {
-	s++;
-	if(s == 60){
-		s = 0;
-		m++;
-		if(m == 60){
-			m = 0;
-			h++;
-			if(h == 24){
-				h = 0;
-			}
-		}
-	}
-	return *this;
+	return *this+=1;
 }
 
 // POST INCREMENT
 Time Time::operator++(int)
 {
 	Time tmp {*this};
-	++(*this);
+	++*this;
 	return tmp;
 }
 
 // PRE DECREMENT
 Time& Time::operator--(){
-	s--;
-	if(s < 0){
-		s = 59;
-		m--;
-		if(m < 0){
-			m = 59;
-			h--;
-			if(h < 0){
-				h = 23;
-			}
-		}
-	}
-	return *this;
+	return *this-=1;
 }
 
 // POST DECREMENT
 Time Time::operator--(int){
 	Time tmp {*this};
-	--(*this);
+	--*this;
 	return tmp;
 }
 
@@ -239,7 +237,8 @@ ostream& operator<<(ostream& os, Time const& item)
 void Time::set_time_values(istream& is){
 	char c;
 	is >> h >> c >> m >> c >> s;
-	check_times();
+	// fixa
+//	check_times();
 }
 
 // STANDARD OUTPUT
