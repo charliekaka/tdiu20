@@ -9,25 +9,39 @@ class List
 {
 
 public:
-    List(std::initializer_list<int> l);
-    
-    List();
-    
-    void insert(int const v);
+  List(std::initializer_list<int> l);
+  List();
 
-    std::string to_string() const;
-private:
-    struct Node
-    {
-        int value {};
-        Node* next;
-        Node* previus;
-    };
-	
-    Node* first;
-    Node* last;
+  ~List();
+  
+  List(List const& other);
+  List& operator=(List const& other);
+
+  List(List && other);
+  List& operator=(List && other);
+
+  std::string to_string() const;
+  
+  void insert(int const v);
+
+  int length() const;
+
+  int at(int const i);
+  
+  void remove_node(int const index);
     
-    void insert(int const v, Node* tmp_pointer);
+private:
+  struct Node
+  {
+    int value {};
+    Node* next;
+    Node* previus;
+  };
+  
+  Node* first;
+  Node* last;
+  
+  void insert(int const v, Node* tmp_pointer);
 };
 
 
