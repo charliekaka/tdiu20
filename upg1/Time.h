@@ -4,17 +4,6 @@
 #include <string>
 #include <sstream>
 
-// Information om komplettering:
-//   Kompletteringen kan gälla hela filen och alla filer i labben,
-//   så får ni komplettering på en sak, kan samma sak förekomma på
-//   fler ställen utan att jag skrivit det.
-//
-//   Komplettering lämnas in via sendlab efter senast en (1) vecka
-//
-//   Har ni frågor om kompletteringen kan ni maila mig på:
-//   love.arreborn@liu.se
-
-
 class Time {
 public:
 	// CONSTRUCTOR FUNCTIONS
@@ -51,7 +40,7 @@ public:
 	bool operator<(const Time& item) const;		// LESSER
 	bool operator<=(const Time& item) const;	// LESSER OR EQUAL
 							
-	void set_time_values(std::istream& is); 	// VALUE SETTER FOR ">>" 
+	void set_time_values(std::istream& is);  	// VALUE SETTER FOR ">>" 
 
 private:
 	int h;
@@ -64,9 +53,9 @@ private:
 
 // STREAM HANDLER OPERATORS
 std::ostream& operator<<(std::ostream& os, Time const& item); // PRINTABLE STRING
-std::istream& operator>>(std::istream& is, Time& item);       // STANDARD OUTPUT
+std::istream& operator>>(std::istream& is, Time& item) noexcept;       // STANDARD OUTPUT
 
-Time operator+(const int x, Time const& t);
-Time operator-(const int x, Time const& t);
+Time operator+(const int x, Time const& t); // PLUS VALUE BEFORE
+Time operator-(const int x, Time const& t); // MINUS VALUE BEFORE
 
 #endif

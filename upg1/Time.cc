@@ -4,12 +4,9 @@
 #include <iostream>
 #include <iomanip>
 
-// Komplettering (bonus): Enligt C++ kodkonvention ska operator>> aldrig kasta ett undantag.
-// Kommentar: Använd inte default-parametrar endast i implementationsfilen.
-
 using namespace std;
 
-Time::Time(int h = 0, int m = 0, int s = 0)
+Time::Time(int h, int m, int s)
 	: h{h}, m{m}, s{s}
 {
 	check_times();
@@ -32,8 +29,8 @@ Time::Time(string const& str_time)
 
 void Time::check_times() const
 {
-	if(	h >= 24 || m >= 60 || s >= 60 ||
-	   	h < 0   || m < 0   || s < 0)
+	if(h >= 24 || m >= 60 || s >= 60 ||
+	   h < 0   || m < 0   || s < 0)
 	{
 		throw out_of_range("felaktiga tider");
 	}
@@ -138,7 +135,7 @@ Time Time::operator+(int const x) const
 // PRE PLUS
 Time operator+(int const x, Time const& t)
 {
-	return t+x;
+	return t + x;
 }
 
 // MINUS
@@ -152,20 +149,20 @@ Time Time::operator-(int const x) const
 // PRE MINUS 
 Time operator-(int const x, Time const& t)
 {
-	return t-x;
+	return t - x;
 }
 
 // MINUS EQUALS
 Time& Time::operator-=(int const x)
 {
-	*this += -1*x;
+	*this += -1 * x;
 	return *this;
 }
 
 // PRE INCREMENT
 Time& Time::operator++()
 {
-	return *this+=1;
+	return *this += 1;
 }
 
 // POST INCREMENT
@@ -178,7 +175,7 @@ Time Time::operator++(int)
 
 // PRE DECREMENT
 Time& Time::operator--(){
-	return *this-=1;
+	return *this -= 1;
 }
 
 // POST DECREMENT
@@ -233,17 +230,28 @@ ostream& operator<<(ostream& os, Time const& item)
 	return os;
 }
 
-// VALUE SETTER FOR ">>"
-void Time::set_time_values(istream& is){
+// PUBLIC VALUE SETTER FOR ">>" 
+void Time::set_time_values(istream& is)
+{
 	char c;
 	is >> h >> c >> m >> c >> s;
-	// fixa
-//	check_times();
+	check_times();
 }
 
 // STANDARD OUTPUT
-istream& operator>>(istream& is, Time& item){
-	item.set_time_values(is);
+istream& operator>>(istream& is, Time& item) noexcept
+{
+	Time tmp_time {item}; 
+	
+	try {
+		item.set_time_values(is);
+	}
+	catch(...){ // CAN HAVE MULTIPLE ERRORS
+		// IF INVALID VALUE, SET BACK TO ORIGINAL VALUE
+		item = tmp_time;
+		is.setstate(ios::failbit);
+	}
+
 	return is;
 }
 

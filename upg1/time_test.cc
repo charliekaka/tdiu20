@@ -2,16 +2,6 @@
 #include "Time.h"
 #include <sstream>
 
-// Komplettering: Ni testar inte gränsfallen för is_am ordentligt, då dessa inte ger korrekt resultat.
-// Komplettering: Ni saknar test för skillnaden mellan pre- och postinkrement/dekrement.
-// Komplettering: Testerna för am/pm ger inte korrekt resultat, då två specialfall hanteras fel. Kolla labbinstruktionerna för att se hur am/pm fungerar.
-// Komplettering: Ni har endast ett test för utströmsoperatorn.
-
-
-
-// Kommentar: Objekt som skapas i ett TEST_CASE behöver inte upprepas. Även om ni kör aritmetiska tester på ett objekt i en section så kommer Catch att återställa objektet till nästa section. Ni behöver alltså inte skapa flera objekt med exakt samma tider, utan kan återanvända dem.
-// Kommentar: Var konsekventa med formatteringen i er fil. Se exempel i section "is_am".
-
 using namespace std;
 
 TEST_CASE ("Constructors and getters")
@@ -70,61 +60,66 @@ TEST_CASE ("Constructors and getters")
 TEST_CASE ("is_am") 
 {
 	Time t0 {"00:00:00"};
-	Time t1 {"01:00:00"};
-	Time t2 {"12:00:00"};
-	Time t3 {"13:00:00"};
-	Time t4 {"23:59:59"};
-	Time t5 {"11:59:59"};
+	Time t1 {"00:59:59"};
+	Time t2 {"01:00:00"};
+	Time t3 {"11:59:59"};
+
+	Time t4 {"12:00:00"};
+	Time t5 {"12:59:59"};
+	Time t6 {"13:00:00"};
+	Time t7 {"23:59:59"};
 
 	CHECK(t0.is_am());
 	CHECK(t1.is_am());
-	CHECK(t5.is_am());
-	CHECK_FALSE(t2.is_am());
-	CHECK_FALSE(t3.is_am());
+	CHECK(t2.is_am());
+	CHECK(t3.is_am());
+
 	CHECK_FALSE(t4.is_am());
+	CHECK_FALSE(t5.is_am());
+	CHECK_FALSE(t6.is_am());
+	CHECK_FALSE(t7.is_am());
 }
 
 
 TEST_CASE ("to_string")
 {
-   Time t0{};
-   Time t1{11, 59, 59};
-   Time t2{12, 0, 0};
-   Time t3{13, 0, 0};
-   Time t4{23, 59, 59};
-   Time t5 {1, 0, 0};
-   Time t6 {0, 59, 59};
-   Time t7 {12, 59, 59};
+   Time t0 {};
+   Time t1 {"00:59:59"};
+   Time t2 {"01:00:00"};
+   Time t3 {"11:59:59"};
+   Time t4 {"12:00:00"};
+   Time t5 {"12:59:59"};
+   Time t6 {"13:00:00"};
+   Time t7 {"23:59:59"};
 
    SECTION("24 hour format no argument")
    {
       CHECK(t0.to_string() == "00:00:00");
-      CHECK(t1.to_string() == "11:59:59");
-      CHECK(t2.to_string() == "12:00:00");
-      CHECK(t3.to_string() == "13:00:00");
-      CHECK(t4.to_string() == "23:59:59");
+      CHECK(t1.to_string() == "00:59:59");
+      CHECK(t2.to_string() == "01:00:00");
+      CHECK(t3.to_string() == "11:59:59");
+      CHECK(t4.to_string() == "12:00:00");
    }
    
    SECTION("24 hour format with argument")
    {
       CHECK(t0.to_string(false) == "00:00:00");
-      CHECK(t1.to_string(false) == "11:59:59");
-      CHECK(t2.to_string(false) == "12:00:00");
-      CHECK(t3.to_string(false) == "13:00:00");
-      CHECK(t4.to_string(false) == "23:59:59");
+      CHECK(t1.to_string(false) == "00:59:59");
+      CHECK(t2.to_string(false) == "01:00:00");
+      CHECK(t3.to_string(false) == "11:59:59");
+      CHECK(t4.to_string(false) == "12:00:00");
    } 
 
    SECTION("12 hour format")
    {
       CHECK(t0.to_string(true) == "12:00:00am");
-      CHECK(t1.to_string(true) == "11:59:59am");
-      CHECK(t2.to_string(true) == "12:00:00pm");
-      CHECK(t3.to_string(true) == "01:00:00pm");
-      CHECK(t4.to_string(true) == "11:59:59pm");
-
-      CHECK(t5.to_string(true) == "01:00:00am");
-      CHECK(t6.to_string(true) == "12:59:59am");
-      CHECK(t7.to_string(true) == "12:59:59pm");
+      CHECK(t1.to_string(true) == "12:59:59am");
+      CHECK(t2.to_string(true) == "01:00:00am");
+      CHECK(t3.to_string(true) == "11:59:59am");
+      CHECK(t4.to_string(true) == "12:00:00pm");
+      CHECK(t5.to_string(true) == "12:59:59pm");
+      CHECK(t6.to_string(true) == "01:00:00pm");
+      CHECK(t7.to_string(true) == "11:59:59pm");
    }
 }
 
@@ -183,20 +178,24 @@ TEST_CASE("operator")
    }
 
    SECTION(">>"){
-	stringstream input1 {"10:10:10"};
-	stringstream input2 {"00:04:00"};
+	stringstream input0 {"10:10:10"};
+	stringstream input1 {"00:04:00"};
+	stringstream input2 {"40:04:00"};
 
-	input1 >> t0;
-	input2 >> t1;
+	input0 >> t0;
+	input1 >> t1;
+	input2 >> t2;
 
 	CHECK(t0.to_string() == "10:10:10");
 	CHECK(t1.to_string() == "00:04:00");
+	CHECK(t2.to_string() == "12:00:00"); // Behåller sitt originella värde då ogiltigt värde matas in
    }
 
    SECTION("++")
    {
 	   Time t1res {12, 0, 0};
 
+	   CHECK_FALSE(++t2 == t2++);
 	   CHECK_FALSE(t0++ == t0);
 	   CHECK(++t1 == t1res);
 	   t3++;
@@ -209,6 +208,7 @@ TEST_CASE("operator")
    {
 	   Time t1res {11, 59, 58};
 
+	   CHECK_FALSE(--t2 == t2--);
 	   CHECK_FALSE(t0-- == t0);
 	   CHECK(--t1 == t1res);
 	   t3--;
