@@ -24,54 +24,60 @@ List::List()
 
 List::~List()
 {
-  while(first != nullptr)
+    while(first != nullptr)
     {
-      remove_node(length() - 1);
+        Node* node = first;
+        first = first -> next;
+        delete node;
     }
+    last = nullptr;
 }
 
 List::List(List const& other)
-  : first{}, last{}
+    : first{}, last{}
 {
-  Node* other_curr = other.first;
+    Node* other_curr = other.first;
 
-  while(other_curr != nullptr)
+    while(other_curr != nullptr)
     {
-      insert(other_curr -> value);
-      other_curr = other_curr -> next;
+        insert(other_curr -> value);
+        other_curr = other_curr -> next;
     }
 }
 
 List& List::operator=(List const& other)
 {
-  while(first != nullptr)
+    while(first != nullptr)
     {
-      remove_node(length() - 1);
+        Node* node = first;
+        first = first -> next;
+        delete node;
     }
+    last = nullptr;
 
-  Node* other_curr = other.first;
+    Node* other_curr = other.first;
   
-  while(other_curr != nullptr)
+    while(other_curr != nullptr)
     {
-      insert(other_curr -> value);
-      other_curr = other_curr -> next;
+        insert(other_curr -> value);
+        other_curr = other_curr -> next;
     }
   
-  return *this;
+    return *this;
 }
 
 List::List(List && other)
-  :first{other.first}, last{other.last}
+    :first{other.first}, last{other.last}
 {
-  other.first = nullptr;
-  other.last = nullptr;
+    other.first = nullptr;
+    other.last = nullptr;
 }
 
 List& List::operator=(List && other)
 {
-  swap(first, other.first);
-  swap(last, other.last);
-  return *this;
+    swap(first, other.first);
+    swap(last, other.last);
+    return *this;
 }
 
 string List::to_string() const
@@ -89,6 +95,47 @@ string List::to_string() const
     return oss.str();
 }
 
+List List::sub(initializer_list<int> list)
+{
+    List l2{};
+    Node* curr_node {first};
+    Node* curr_l2_node {};
+    int curr_index {};
+    
+    for(int index : list)
+    {
+        while(index != curr_index)
+        {
+            if(index < curr_index) throw invalid_argument("You have to put the index in rising order");
+            if(curr_node == nullptr) throw out_of_range("Index does not exsist");
+            curr_index++;
+            curr_node = curr_node -> next;
+            
+        }
+
+        if( l2.first == nullptr )
+        {
+            l2.first = new Node{curr_node -> value, nullptr, nullptr};
+            l2.last = l2.first;
+            curr_l2_node = l2.first;
+        }
+        else if(curr_l2_node == l2.last)
+        {
+            curr_l2_node = new Node{curr_node -> value, nullptr, l2.last};
+            l2.last -> next = curr_l2_node;
+            l2.last = curr_l2_node;
+        }
+       
+    }
+
+    swap(first, l2.first);
+
+    swap(last, l2.last);
+
+    return *this;
+    
+}
+
 void List::insert(int const v)
 {
     if( first == nullptr )
@@ -104,78 +151,78 @@ void List::insert(int const v)
 
 int List::length() const
 {
-  Node* node = first;
-  int len {};
-  while(node != nullptr)
+    Node* node = first;
+    int len {};
+    while(node != nullptr)
     {
-      len ++;
-      node = node -> next;
+        len ++;
+        node = node -> next;
     }
-  return len;
+    return len;
 }
 
-int List::at(int const index)
+int List::at(int const index) const
 {
-  Node* node = first;
-  int curr_index {};
-  while(node != nullptr)
+    Node* node = first;
+    int curr_index {};
+    while(node != nullptr)
     {
-      if(index == curr_index) return node -> value;
-      node = node -> next;
-      curr_index++;
+        if(index == curr_index) return node -> value;
+        node = node -> next;
+        curr_index++;
     }
-  throw out_of_range("index to high");
+    throw out_of_range("index to high");
 }
 
 void List::remove_node(int const index)
 {
-  Node* node = first;
-  int lap {0};
-  while(node != nullptr)
+    Node* node = first;
+    int lap {0};
+    while(node != nullptr)
     {
-      if(lap == index)
+        if(lap == index)
 	{
-	  if(node != first && node != last)
+            if(node != first && node != last)
 	    {
-	      node -> next -> previus = node -> previus;
-	      node -> previus -> next = node -> next;
+                node -> next -> previus = node -> previus;
+                node -> previus -> next = node -> next;
 	    }
 	  
-	  if(first == node)
+            if(first == node)
 	    {
-	      if(node -> next != nullptr) node -> next -> previus = nullptr;
-	      first = node -> next;
+                if(node -> next != nullptr) node -> next -> previus = nullptr;
+                first = node -> next;
 	    }
-	  if(last == node)
+            if(last == node)
 	    {
-	      if(node -> previus != nullptr) node -> previus -> next = nullptr;
-	      last = node -> previus;
+                if(node -> previus != nullptr) node -> previus -> next = nullptr;
+                last = node -> previus;
 	    }
 
-	  delete node;
-	  return;
+            delete node;
+            return;
 	}
-      node = node -> next;
-      lap++;
+        node = node -> next;
+        lap++;
     }
-  throw out_of_range("The index is to high");
+    throw out_of_range("The index is to high");
 }
 
-void List::insert(int const v,Node* node_pointer)
+void List::insert(int const v,Node* node)
 {
-    if(node_pointer == nullptr)
+    if(node == nullptr)
     {
-        node_pointer = new Node{v, nullptr, last};
-        last -> next = node_pointer;
-        last = node_pointer;
+        node = new Node{v, nullptr, last};
+        last -> next = node;
+        last = node;
         return;
     }
     
-    if(v <= (node_pointer -> value))
+    if(v <= (node -> value))
     {
         // new Node before the one node_pointer is on
-        Node* new_node = new Node{v ,node_pointer, node_pointer -> previus };
-        if(node_pointer == first)
+        Node* new_node = new Node{v ,node, node -> previus };
+        if(node == first)
         {
             first = new_node;
         }
@@ -183,11 +230,11 @@ void List::insert(int const v,Node* node_pointer)
         {
             new_node -> previus -> next = new_node; 
         }
-	node_pointer -> previus = new_node;     
+	node -> previus = new_node;     
         return;
     }
-    else if(v > (node_pointer -> value))
+    else if(v > (node -> value))
     {
-        return insert(v, (node_pointer -> next));        
+        return insert(v, (node -> next));        
     }
 }
