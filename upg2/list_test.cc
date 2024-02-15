@@ -29,12 +29,13 @@ TEST_CASE("List")
       CHECK(l2.to_string() == "0 1 2 2 2 3 ");
 
       l2.remove_node(2);
-      CHECK(l2.to_string() == "0 1 2 2 3 "); //Only the first value found gets removed
+      CHECK(l2.to_string() == "0 1 2 2 3 ");
       
       l1.remove_node(0);
       l1.remove_node(0);
       CHECK_THROWS(l1.remove_node(3));
       CHECK(l1.to_string() == "");
+      
     }
 
   SECTION("Copy and move tests")
@@ -46,6 +47,34 @@ TEST_CASE("List")
 
       l5 = l2;
       CHECK(l5.to_string() == l2.to_string());
+      l5 = l4;
+      CHECK(l5.to_string() == l4.to_string());
+
+      List l7 {move(l5)};
+      CHECK(l5.to_string() == "");
+      CHECK(l7.to_string() == l4.to_string());
+
+      l7 = move(l2);
+      CHECK(l2.to_string() == l4.to_string());
+      CHECK(l7.to_string() == "1 2 3 ");
+    }
+
+  SECTION("Length and at index tests")
+    {
+      CHECK(l4.length() == 4);
+      l4.insert(3);
+      CHECK(l4.length() == 5);
+      
+      CHECK(l4.at(2) == 2);
+      CHECK(l4.at(0) == -10);
+      CHECK_THROWS(l4.at(5));
+      CHECK_THROWS(l4.at(10));
+      
+    }
+
+  SECTION("")
+    {
+      
     }
   
 }

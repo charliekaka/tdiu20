@@ -21,12 +21,14 @@ public:
   List& operator=(List && other);
 
   std::string to_string() const;
+
+  void sub();
   
   void insert(int const v);
 
   int length() const;
 
-  int at(int const i);
+  int at(int const index);
   
   void remove_node(int const index);
     

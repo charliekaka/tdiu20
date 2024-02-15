@@ -114,16 +114,17 @@ int List::length() const
   return len;
 }
 
-int List::at(int const i)
+int List::at(int const index)
 {
   Node* node = first;
-
-  for(int j = 0; j < i; j++)
+  int curr_index {};
+  while(node != nullptr)
     {
-      if(node == nullptr) throw out_of_range("Index to high");
+      if(index == curr_index) return node -> value;
       node = node -> next;
+      curr_index++;
     }
-  return node -> value;
+  throw out_of_range("index to high");
 }
 
 void List::remove_node(int const index)
