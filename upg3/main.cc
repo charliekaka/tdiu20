@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -11,11 +12,11 @@ using namespace std;
   Ledning och Tips:
 
   - Modifiera stukturen till en header-fil och en implementationsfil
-  - Utöka 'run()' och 'draw_map()' med övrig funktionalitet.
-  - Lägg alla spöken i en lämplig behållare som en datamedlem.
+  - Utï¿½ka 'run()' och 'draw_map()' med ï¿½vrig funktionalitet.
+  - Lï¿½gg alla spï¿½ken i en lï¿½mplig behï¿½llare som en datamedlem.
   - Bryt ut stora kodblock till egna funktioner.
-  - Använd hjälpfunktioner för att undvika duplicering av kod.
-  - Tänk på att varje funktion inte borde vara längre än 25 rader.
+  - Anvï¿½nd hjï¿½lpfunktioner fï¿½r att undvika duplicering av kod.
+  - Tï¿½nk pï¿½ att varje funktion inte borde vara lï¿½ngre ï¿½n 25 rader.
  */
 
 class Ghost_Tester
@@ -24,8 +25,12 @@ class Ghost_Tester
 public:
 
     Ghost_Tester()
-        : pacman {}
+        : pacman {}, ghost_list {}
     {
+
+        ghost_list.push_back(new Blinky{pacman});
+        ghost_list.push_back(new Pinky{pacman});
+        ghost_list.push_back(new Clyde{pacman});
     }
 
     void run()
@@ -42,16 +47,34 @@ public:
             string command {};
             iss >> command;
 
+	    // Lï¿½GG TILL RED, SCATTER MM
 
-	    // LÄGG TILL RED, SCATTER MM
+            for (Ghost* e : ghost_list) {
+                if (command == e->get_color())
+                {
+                    Point new_pos {};
+                    iss >> new_pos.x >> new_pos.y;
+                    e->set_position(new_pos);
+                }
+            }
+
+
             if (command == "pos")
             {
                 Point new_pos {};
                 iss >> new_pos.x >> new_pos.y;
                 pacman.set_position(new_pos);
             }
+            
             else if (command == "dir")
             {
+                Point new_dir {};
+                iss >> new_dir.x >> new_dir.y;
+                pacman.set_direction(new_dir);
+            }
+            else if (command == "scatter")
+            {
+                
             }
             else if (command == "quit")
             {
@@ -63,11 +86,11 @@ public:
 private:
 
     /*
-      En hjälpfunktion som avgör vilka två tecken som ska ritas ut för en given position på
+      En hjï¿½lpfunktion som avgï¿½r vilka tvï¿½ tecken som ska ritas ut fï¿½r en given position pï¿½
       spelplanen.
      */
 
-    // LÄGG TILL FLER TECKEN?
+    // Lï¿½GG TILL FLER TECKEN?
     string to_draw(Point const& curr_pos)
     {
         string to_draw{"  "};
@@ -81,13 +104,13 @@ private:
     }
     
     /*
-      En hjälpfunktion för att rita ut spelplanen för testprogrammet.
+      En hjï¿½lpfunktion fï¿½r att rita ut spelplanen fï¿½r testprogrammet.
       
-      Itererar över varje rad och column i kartan. Index för raderna är flippade för att placera
-      y = 0 längst ned.
+      Itererar ï¿½ver varje rad och column i kartan. Index fï¿½r raderna ï¿½r flippade fï¿½r att placera
+      y = 0 lï¿½ngst ned.
       
-      Varje punkt i kartan ritas som två tecken eftersom ett tecken i terminalen är ca dubbelt så
-      högt som det är brett.
+      Varje punkt i kartan ritas som tvï¿½ tecken eftersom ett tecken i terminalen ï¿½r ca dubbelt sï¿½
+      hï¿½gt som det ï¿½r brett.
     */
     void draw_map()
     {
@@ -107,6 +130,10 @@ private:
     }
 
     Pacman pacman;
+
+    vector<Ghost*> ghost_list;
+
+
 };
 
 int main()
