@@ -14,11 +14,10 @@ public:
 	virtual Point get_chase_point() const = 0;
 	virtual Point get_scatter_point() const = 0;
 	virtual std::string get_color() const = 0;
-
-protected:
 	virtual Point get_position() const;
 	virtual void set_position(Point);
 
+protected:
 	Pacman& pacman;
 	Point pos {};
 };
