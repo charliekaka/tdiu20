@@ -17,9 +17,14 @@ public:
     Ghost_Tester()
         : pacman {}, ghost_list {}
     {
-        ghost_list.push_back(new Blinky{pacman});
+        Blinky* blink_ = new Blinky{pacman};
+
+        Inky* inky = new Inky{pacman, *blink_};
+
+        ghost_list.push_back(blink_);
         ghost_list.push_back(new Pinky{pacman});
         ghost_list.push_back(new Clyde{pacman});
+        ghost_list.push_back(inky);
     }
 
     void run()
@@ -44,7 +49,27 @@ public:
                     iss >> new_pos.x >> new_pos.y;
                     e -> set_position(new_pos);
                 }
+                else if (command == "chase")
+                {
+                    e -> set_position(e -> get_chase_point());
+                }
+                else if (command == "chase")
+                {
+                    e -> set_position(e -> get_chase_point());
+                }
+                else if (command == "scatter")
+                {
+                    e -> set_position(e -> get_scatter_point());
+                }
+                else if (command == "anger")
+                {
+                    // behöver vara blinky
+                    if(e -> get_color() == "red") {
+                        dynamic_cast<Blinky*>(e) -> set_angry(true);
+                    }
+                }
             }
+
             if (command == "pos")
             {
                 Point new_pos {};
@@ -56,13 +81,6 @@ public:
                 Point new_dir {};
                 iss >> new_dir.x >> new_dir.y;
                 pacman.set_direction(new_dir);
-            }
-            else if (command == "scatter")
-            {
-                for (Ghost* e : ghost_list) 
-                {
-                    e -> set_position(e -> get_scatter_point());
-                }
             }
             else if (command == "quit")
             {

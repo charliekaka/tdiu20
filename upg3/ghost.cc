@@ -5,7 +5,7 @@ using namespace std;
 
 // BASKLASS GHOST
 Ghost::Ghost(Pacman& pm)
-	: pacman {pm}
+	: pacman(pm)
 {}
 
 Point Ghost::get_position() const {
@@ -21,6 +21,10 @@ bool Blinky::is_angry() const{
 	return angry;
 }
 
+void Blinky::set_angry(bool b) {
+	angry = b;
+}
+
 Point Blinky::get_chase_point() const {
 	// spelare pos
 	return pacman.get_position();
@@ -30,7 +34,7 @@ Point Blinky::get_scatter_point() const {
 	// om arg chase point annars övre högra hörnet
 	Point blinky_scatter = {WIDTH-1, HEIGHT-1};
 	if(angry) {
-		blinky_scatter = pacman.get_position();
+		blinky_scatter = get_chase_point();
 	}
 	return blinky_scatter;
 }
@@ -86,4 +90,53 @@ Point Clyde::get_scatter_point() const {
 
 string Clyde::get_color() const {
 	return "orange";
+}
+
+// INKY
+Inky::Inky(Pacman& pm, Blinky& bl)
+    : Ghost(pm), blinky(bl)
+{}
+
+Point Inky::get_chase_point() const {
+	Point pacman_pos {pacman.get_position()};
+	Point pacman_dir {pacman.get_direction()};
+	Point blinky_pos {blinky.get_position()};
+	Point inky_chase {};
+
+	pacman_pos = {pacman_pos.x + (pacman_dir.x*2), pacman_pos.y + (pacman_dir.y*2)};
+
+	int x_diff {abs(pacman_pos.x - blinky_pos.x)};
+	int y_diff {abs(pacman_pos.y - blinky_pos.y)};
+
+	if(pacman_pos.x >= blinky_pos.x) 
+	{
+		inky_chase.x = pacman_pos.x + x_diff;
+	} else 
+	{
+		inky_chase.x = pacman_pos.x - x_diff;
+	}
+
+	if(pacman_pos.y >= blinky_pos.y)
+	{
+		inky_chase.y = pacman_pos.y + y_diff;
+	} else 
+	{
+		inky_chase.y = pacman_pos.y - y_diff;
+	}
+
+	if(inky_chase.x > WIDTH-1) inky_chase.x = WIDTH-1;
+	if(inky_chase.x < 0) inky_chase.x = 0;
+	if(inky_chase.y > HEIGHT-1) inky_chase.y = HEIGHT-1;
+	if(inky_chase.y < 0) inky_chase.y = 0;
+
+	return inky_chase;
+}
+
+Point Inky::get_scatter_point() const {
+	Point inky_scatter {WIDTH-1, 0};
+	return inky_scatter;
+}
+
+string Inky::get_color() const {
+	return "blue";
 }

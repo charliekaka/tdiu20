@@ -31,6 +31,7 @@ public:
 	Point get_chase_point() const override;
 	Point get_scatter_point() const override;
 	std::string get_color() const override;
+	void set_angry(bool);
 	bool is_angry() const;
 
 private:
@@ -50,7 +51,6 @@ public:
 
 private:
 	Point pos {};
-
 };
 
 // CLYDE
@@ -66,7 +66,22 @@ public:
 private:
 	Point pos {};
 	int attack_steps {6};
-
 };
+
+// INKY
+class Inky : public Ghost {
+
+public:
+	Inky(Pacman& pm, Blinky& bl);
+
+	Point get_chase_point() const override;
+	Point get_scatter_point() const override;
+	std::string get_color() const override;
+
+private:
+	Point pos {};
+	Blinky& blinky;
+};
+
 
 #endif
