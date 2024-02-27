@@ -8,7 +8,7 @@
 class Ghost {
 
 public:
-	Ghost(Pacman& pm);
+	Ghost(Pacman& pm, Point ghost_pos, Point scatter_pos);
 	virtual ~Ghost() = default;
 
 	virtual Point get_chase_point() const = 0;
@@ -20,6 +20,7 @@ public:
 protected:
 	Pacman& pacman;
 	Point pos {};
+	Point scatter_pos {};
 };
 
 // BLINKY
@@ -35,7 +36,6 @@ public:
 	bool is_angry() const;
 
 private:
-	Point pos {};
 	bool angry {false};
 };
 
@@ -48,38 +48,33 @@ public:
 	Point get_chase_point() const override;
 	Point get_scatter_point() const override;
 	std::string get_color() const override;
-
-private:
-	Point pos {};
 };
 
 // CLYDE
 class Clyde : public Ghost {
 
 public:
-	using Ghost::Ghost;
+	Clyde(Pacman& pm, Point pos, Point scatter_pos, int attack);
 
 	Point get_chase_point() const override;
 	Point get_scatter_point() const override;
 	std::string get_color() const override;
 
 private:
-	Point pos {};
-	int attack_steps {6};
+	int attack_steps {};
 };
 
 // INKY
 class Inky : public Ghost {
 
 public:
-	Inky(Pacman& pm, Blinky& bl);
+	Inky(Pacman& pm, Point pos, Point scatter_pos, Blinky& bl);
 
 	Point get_chase_point() const override;
 	Point get_scatter_point() const override;
 	std::string get_color() const override;
 
 private:
-	Point pos {};
 	Blinky& blinky;
 };
 

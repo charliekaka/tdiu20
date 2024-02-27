@@ -4,8 +4,8 @@
 using namespace std;
 
 // BASKLASS GHOST
-Ghost::Ghost(Pacman& pm)
-	: pacman(pm)
+Ghost::Ghost(Pacman& pm, Point ghost_pos, Point scatter_pos)
+	: pacman(pm), pos {ghost_pos}, scatter_pos {scatter_pos}
 {}
 
 Point Ghost::get_position() const {
@@ -32,11 +32,10 @@ Point Blinky::get_chase_point() const {
 
 Point Blinky::get_scatter_point() const {
 	// om arg chase point annars övre högra hörnet
-	Point blinky_scatter = {WIDTH-1, HEIGHT-1};
 	if(angry) {
-		blinky_scatter = get_chase_point();
+		return get_chase_point();
 	}
-	return blinky_scatter;
+	return scatter_pos;
 }
 
 string Blinky::get_color() const {
@@ -56,8 +55,7 @@ Point Pinky::get_chase_point() const {
 
 Point Pinky::get_scatter_point() const {
 	// övre vänstra hörnet
-	Point pinky_scatter {0,HEIGHT-1};
-	return pinky_scatter;
+	return scatter_pos;
 }
 
 string Pinky::get_color() const {
@@ -65,6 +63,11 @@ string Pinky::get_color() const {
 }
 
 // CLYDE ///////////////
+Clyde::Clyde(Pacman& pm, Point pos, Point scatter_pos, int attack)
+// MÅSVINGAR
+    : Ghost(pm, pos, scatter_pos), attack_steps {attack}
+{}
+
 Point Clyde::get_chase_point() const {
 	// spelare om clyde är mer en n steg ifrån den annars scattermål
 	Point clyde_chase {get_scatter_point()};
@@ -84,8 +87,7 @@ Point Clyde::get_chase_point() const {
 
 Point Clyde::get_scatter_point() const {
 	// nedre vänstra hörnet
-	Point clyde_scatter {0, 0};
-	return clyde_scatter;
+	return scatter_pos;
 }
 
 string Clyde::get_color() const {
@@ -93,8 +95,9 @@ string Clyde::get_color() const {
 }
 
 // INKY
-Inky::Inky(Pacman& pm, Blinky& bl)
-    : Ghost(pm), blinky(bl)
+Inky::Inky(Pacman& pm, Point pos, Point scatter_pos, Blinky& bl)
+// MÅSVINGAR
+    : Ghost(pm, pos, scatter_pos), blinky(bl)
 {}
 
 Point Inky::get_chase_point() const {
@@ -133,8 +136,7 @@ Point Inky::get_chase_point() const {
 }
 
 Point Inky::get_scatter_point() const {
-	Point inky_scatter {WIDTH-1, 0};
-	return inky_scatter;
+	return scatter_pos;
 }
 
 string Inky::get_color() const {
