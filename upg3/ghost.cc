@@ -4,8 +4,8 @@
 using namespace std;
 
 // BASKLASS GHOST
-Ghost::Ghost(Pacman& pm, Point ghost_pos, Point scatter_pos)
-	: pacman(pm), pos {ghost_pos}, scatter_pos {scatter_pos}
+Ghost::Ghost(Pacman& pm, Point ghost_pos, Point scatter_pos, string color)
+	: pacman(pm), pos {ghost_pos}, scatter_pos {scatter_pos}, color {color}
 {}
 
 Point Ghost::get_position() const {
@@ -16,7 +16,15 @@ void Ghost::set_position(Point p) {
 	pos = p;
 }
 
+string Ghost::get_color() const {
+	return color;
+}
+
 // BLINKY //////////////
+Blinky::Blinky(Pacman& pm, Point pos, Point scatter_pos)
+	: Ghost(pm, pos, scatter_pos, "red")
+{}
+
 bool Blinky::is_angry() const{
 	return angry;
 }
@@ -38,17 +46,19 @@ Point Blinky::get_scatter_point() const {
 	return scatter_pos;
 }
 
-string Blinky::get_color() const {
-	return "red";
-}
-
 // PINKY //////////////
+Pinky::Pinky(Pacman& pm, Point pos, Point scatter_pos)
+	: Ghost(pm, pos, scatter_pos, "pink")
+{}
+
 Point Pinky::get_chase_point() const {
 	// två steg franför spelaren i dens riktning
 	Point pacman_dir {pacman.get_direction()};
 	Point pacman_pos {pacman.get_position()};
 	Point pinky_chase {pacman_pos.x + (pacman_dir.x*2), pacman_pos.y + (pacman_dir.y*2)};
+	if(pinky_chase.x < 0) pinky_chase.x = 0;
 	if(pinky_chase.x > WIDTH-1) pinky_chase.x = WIDTH-1;
+	if(pinky_chase.y < 0) pinky_chase.y = 0;
 	if(pinky_chase.y > HEIGHT-1) pinky_chase.y = HEIGHT-1;
 	return pinky_chase;
 }
@@ -58,14 +68,9 @@ Point Pinky::get_scatter_point() const {
 	return scatter_pos;
 }
 
-string Pinky::get_color() const {
-	return "pink";
-}
-
 // CLYDE ///////////////
 Clyde::Clyde(Pacman& pm, Point pos, Point scatter_pos, int attack)
-// MÅSVINGAR
-    : Ghost(pm, pos, scatter_pos), attack_steps {attack}
+    : Ghost(pm, pos, scatter_pos, "orange"), attack_steps {attack}
 {}
 
 Point Clyde::get_chase_point() const {
@@ -90,14 +95,10 @@ Point Clyde::get_scatter_point() const {
 	return scatter_pos;
 }
 
-string Clyde::get_color() const {
-	return "orange";
-}
-
 // INKY
 Inky::Inky(Pacman& pm, Point pos, Point scatter_pos, Blinky& bl)
 // MÅSVINGAR
-    : Ghost(pm, pos, scatter_pos), blinky(bl)
+    : Ghost(pm, pos, scatter_pos, "blue"), blinky(bl)
 {}
 
 Point Inky::get_chase_point() const {
@@ -137,8 +138,4 @@ Point Inky::get_chase_point() const {
 
 Point Inky::get_scatter_point() const {
 	return scatter_pos;
-}
-
-string Inky::get_color() const {
-	return "blue";
 }
