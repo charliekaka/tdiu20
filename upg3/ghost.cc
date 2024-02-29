@@ -5,14 +5,23 @@ using namespace std;
 
 // BASKLASS GHOST
 Ghost::Ghost(Pacman& pm, Point ghost_pos, Point scatter_pos, string color)
-	: pacman(pm), pos {ghost_pos}, scatter_pos {scatter_pos}, color {color}
+	: pacman{pm}, pos {ghost_pos}, scatter_pos {scatter_pos}, color {color}
 {}
 
 Point Ghost::get_position() const {
 	return pos;
 }
 
+Point Ghost::get_scatter_point() const {
+	return scatter_pos;
+}
+
 void Ghost::set_position(Point p) {
+	if(p.x > WIDTH-1) p.x = WIDTH-1;
+	if(p.x < 0) p.x = 0;
+	if(p.y > HEIGHT-1) p.y = HEIGHT-1;
+	if(p.y < 0) p.y = 0;
+
 	pos = p;
 }
 
@@ -22,7 +31,7 @@ string Ghost::get_color() const {
 
 // BLINKY //////////////
 Blinky::Blinky(Pacman& pm, Point pos, Point scatter_pos)
-	: Ghost(pm, pos, scatter_pos, "red")
+	: Ghost{pm, pos, scatter_pos, "red"}
 {}
 
 bool Blinky::is_angry() const{
@@ -48,7 +57,7 @@ Point Blinky::get_scatter_point() const {
 
 // PINKY //////////////
 Pinky::Pinky(Pacman& pm, Point pos, Point scatter_pos)
-	: Ghost(pm, pos, scatter_pos, "pink")
+	: Ghost{pm, pos, scatter_pos, "pink"}
 {}
 
 Point Pinky::get_chase_point() const {
@@ -56,21 +65,13 @@ Point Pinky::get_chase_point() const {
 	Point pacman_dir {pacman.get_direction()};
 	Point pacman_pos {pacman.get_position()};
 	Point pinky_chase {pacman_pos.x + (pacman_dir.x*2), pacman_pos.y + (pacman_dir.y*2)};
-	if(pinky_chase.x < 0) pinky_chase.x = 0;
-	if(pinky_chase.x > WIDTH-1) pinky_chase.x = WIDTH-1;
-	if(pinky_chase.y < 0) pinky_chase.y = 0;
-	if(pinky_chase.y > HEIGHT-1) pinky_chase.y = HEIGHT-1;
-	return pinky_chase;
-}
 
-Point Pinky::get_scatter_point() const {
-	// övre vänstra hörnet
-	return scatter_pos;
+	return pinky_chase;
 }
 
 // CLYDE ///////////////
 Clyde::Clyde(Pacman& pm, Point pos, Point scatter_pos, int attack)
-    : Ghost(pm, pos, scatter_pos, "orange"), attack_steps {attack}
+    : Ghost{pm, pos, scatter_pos, "orange"}, attack_steps {attack}
 {}
 
 Point Clyde::get_chase_point() const {
@@ -90,15 +91,9 @@ Point Clyde::get_chase_point() const {
 	return clyde_chase;
 }
 
-Point Clyde::get_scatter_point() const {
-	// nedre vänstra hörnet
-	return scatter_pos;
-}
-
 // INKY
 Inky::Inky(Pacman& pm, Point pos, Point scatter_pos, Blinky& bl)
-// MÅSVINGAR
-    : Ghost(pm, pos, scatter_pos, "blue"), blinky(bl)
+    : Ghost{pm, pos, scatter_pos, "blue"}, blinky{bl}
 {}
 
 Point Inky::get_chase_point() const {
@@ -109,33 +104,11 @@ Point Inky::get_chase_point() const {
 
 	pacman_pos = {pacman_pos.x + (pacman_dir.x*2), pacman_pos.y + (pacman_dir.y*2)};
 
-	int x_diff {abs(pacman_pos.x - blinky_pos.x)};
-	int y_diff {abs(pacman_pos.y - blinky_pos.y)};
+	int x_diff {pacman_pos.x - blinky_pos.x};
+	int y_diff {pacman_pos.y - blinky_pos.y};
 
-	if(pacman_pos.x >= blinky_pos.x) 
-	{
-		inky_chase.x = pacman_pos.x + x_diff;
-	} else 
-	{
-		inky_chase.x = pacman_pos.x - x_diff;
-	}
-
-	if(pacman_pos.y >= blinky_pos.y)
-	{
-		inky_chase.y = pacman_pos.y + y_diff;
-	} else 
-	{
-		inky_chase.y = pacman_pos.y - y_diff;
-	}
-
-	if(inky_chase.x > WIDTH-1) inky_chase.x = WIDTH-1;
-	if(inky_chase.x < 0) inky_chase.x = 0;
-	if(inky_chase.y > HEIGHT-1) inky_chase.y = HEIGHT-1;
-	if(inky_chase.y < 0) inky_chase.y = 0;
+	inky_chase.x = pacman_pos.x + x_diff;
+	inky_chase.y = pacman_pos.y + y_diff;
 
 	return inky_chase;
-}
-
-Point Inky::get_scatter_point() const {
-	return scatter_pos;
 }

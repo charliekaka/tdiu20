@@ -17,13 +17,12 @@ public:
     Ghost_Tester()
         : pacman {}, ghost_list {}
     {
-        Blinky* blink_ = new Blinky{pacman};
-
-        Inky* inky = new Inky{pacman, *blink_};
+        Blinky* blink_ = new Blinky{pacman, {}, {WIDTH-1, HEIGHT-1}};
+        Inky* inky = new Inky{pacman, {}, {WIDTH-1, 0}, *blink_};
 
         ghost_list.push_back(blink_);
-        ghost_list.push_back(new Pinky{pacman});
-        ghost_list.push_back(new Clyde{pacman});
+        ghost_list.push_back(new Pinky{pacman, {}, {0, HEIGHT-1}});
+        ghost_list.push_back(new Clyde{pacman, {}, {0, 0}, 6});
         ghost_list.push_back(inky);
     }
 
@@ -48,10 +47,6 @@ public:
                     Point new_pos {};
                     iss >> new_pos.x >> new_pos.y;
                     e -> set_position(new_pos);
-                }
-                else if (command == "chase")
-                {
-                    e -> set_position(e -> get_chase_point());
                 }
                 else if (command == "chase")
                 {
