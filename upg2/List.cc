@@ -1,10 +1,14 @@
 #include "List.h"
-#include <vector>
 #include <initializer_list>
 #include <string>
 #include <sstream>
-#include <iostream>
 #include <exception>
+
+// Komplettering: Kodupprepning mellan destruktorn och kopieringstilldelningsoperatorn.
+//DONE
+
+// Komplettering: Olämpligt val av loop. Om antal varv är känt ska en for-loop användas.
+// Done ish
 
 using namespace std;
 
@@ -24,13 +28,9 @@ List::List()
 
 List::~List()
 {
-    while(first != nullptr)
-    {
-        Node* node = first;
-        first = first -> next;
-        delete node;
-    }
-    last = nullptr;
+  delete_all(first);
+  first = nullptr;
+  last = nullptr;
 }
 
 List::List(List const& other)
@@ -47,17 +47,13 @@ List::List(List const& other)
 
 List& List::operator=(List const& other)
 {
-    while(first != nullptr)
-    {
-        Node* node = first;
-        first = first -> next;
-        delete node;
-    }
-    last = nullptr;
+  delete_all(first);
+  first = nullptr;
+  last  = nullptr;
 
     Node* other_curr = other.first;
   
-    while(other_curr != nullptr)
+    while(other_curr != nullptr) // kodupprepning??
     {
         insert(other_curr -> value);
         other_curr = other_curr -> next;
@@ -164,23 +160,25 @@ int List::length() const
 int List::at(int const index) const
 {
     Node* node = first;
-    int curr_index {};
-    while(node != nullptr)
+
+    for(int i {}; i <= index; i++)
     {
-        if(index == curr_index) return node -> value;
-        node = node -> next;
-        curr_index++;
+      if(node == nullptr) break;
+      if(i == index) return node -> value;
+      node = node -> next;
     }
+
     throw out_of_range("index to high");
 }
 
-void List::remove_node(int const index)
+void List::remove(int const index)
 {
     Node* node = first;
-    int lap {0};
-    while(node != nullptr)
+    
+    for(int i {}; i <= index; i++)
     {
-        if(lap == index)
+      if(node == nullptr) throw out_of_range("The index is to high");
+        if(i == index)
 	{
             if(node != first && node != last)
 	    {
@@ -203,9 +201,18 @@ void List::remove_node(int const index)
             return;
 	}
         node = node -> next;
-        lap++;
     }
-    throw out_of_range("The index is to high");
+
+}
+
+void List::delete_all(Node* curr_node)
+{
+  while(curr_node != nullptr)
+    {
+        Node* node = curr_node;
+        curr_node = curr_node -> next; 
+        delete node;
+    }
 }
 
 void List::insert(int const v,Node* node)
@@ -237,4 +244,10 @@ void List::insert(int const v,Node* node)
     {
         return insert(v, (node -> next));        
     }
+}
+
+ostream& operator<<(ostream& os, List const& list)
+{
+  os << list.to_string();
+  return os;
 }
